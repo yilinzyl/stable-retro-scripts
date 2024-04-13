@@ -73,12 +73,13 @@ def test_model(args, num_matchs, logger):
     new_args = args
     new_args.model_1 = args.load_p1_model
     new_args.model_2 = ''
-    game = ModelVsGame(new_args, logger, need_display=False)
+    games.wrappers.init(new_args)
+    game = ModelVsGame(new_args, logger)
 
     won_matchs = 0
     total_rewards = 0
     for i in range(0, num_matchs):
-        info, reward = game.play(False)
+        info, reward = game.play(need_reset=False)
         if info[0].get('won_rounds') == 2:
             won_matchs += 1
         total_rewards += reward
@@ -131,6 +132,7 @@ def main(argv):
     for state in game_states:
         num_test_matchs = NUM_TEST_MATCHS
         new_args = args
+        new_args.state = state
         won_matchs, total_reward = test_model(new_args, num_test_matchs, logger)
         percentage = won_matchs / num_test_matchs
         com_print('STATE:%s... WON MATCHS:%d/%d TOTAL REWARDS:%d' % (state, won_matchs, num_test_matchs, total_reward))
