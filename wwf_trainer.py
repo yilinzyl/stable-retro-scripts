@@ -70,7 +70,10 @@ game_states_veryhard = [
 ]
 
 def test_model(args, num_matchs, logger):
-    game = ModelVsGame(args, logger, need_display=False)
+    new_args = args
+    new_args.model_1 = args.load_p1_model
+    new_args.model_2 = ''
+    game = ModelVsGame(new_args, logger, need_display=False)
 
     won_matchs = 0
     total_rewards = 0
