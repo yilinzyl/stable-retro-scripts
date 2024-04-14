@@ -69,6 +69,26 @@ game_states_veryhard = [
     'VeryHard_Yokozuna-07'
 ]
 
+train_states = [
+    'VeryEasy_Yokozuna-01',
+    'VeryEasy_Yokozuna-02',
+    'VeryEasy_Yokozuna-03',
+    'VeryEasy_Yokozuna-04',
+    'VeryEasy_Yokozuna-05',
+    'VeryHard_Yokozuna-01',
+    'VeryHard_Yokozuna-02',
+    'VeryHard_Yokozuna-03',
+    'VeryHard_Yokozuna-04',
+    'VeryHard_Yokozuna-05',
+]
+
+test_states = [
+    'VeryHard_Yokozuna-06',
+    'VeryHard_Yokozuna-07',
+    'VeryHard_Yokozuna-06',
+    'VeryHard_Yokozuna-07'
+]
+
 def test_model(args, num_matchs, logger):
     new_args = args
     new_args.model_1 = args.load_p1_model
@@ -79,7 +99,7 @@ def test_model(args, num_matchs, logger):
     won_matchs = 0
     total_rewards = 0
     for i in range(0, num_matchs):
-        info, reward = game.play(need_reset=False)
+        info, reward = game.play(continuous=False)
         if info[0].get('won_rounds') == 2:
             won_matchs += 1
         total_rewards += reward
@@ -100,7 +120,7 @@ def main(argv):
     
     com_print('================ WWF trainer ================')
     com_print('These states will be trained on:')
-    com_print(game_states)
+    com_print(train_states)
 
     # turn off verbose
     args.alg_verbose = False
@@ -109,7 +129,7 @@ def main(argv):
 
     # Train model on each state
     if not args.test_only:    
-        for state in game_states:
+        for state in train_states:
             com_print('TRAINING ON STATE:%s - %d timesteps' % (state, args.num_timesteps))
             args.state = state
             args.load_p1_model = p1_model_path
@@ -117,19 +137,19 @@ def main(argv):
             p1_model_path = trainer.train()
 
             # Test model performance
-            num_test_matchs = NUM_TEST_MATCHS
-            new_args = args
-            new_args.load_p1_model = p1_model_path
-            com_print('    TESTING MODEL ON %d matchs...' % num_test_matchs)
-            won_matchs, total_reward = test_model(new_args, num_test_matchs, logger)
-            percentage = won_matchs / num_test_matchs
-            com_print('    WON MATCHS:%d/%d - ratio:%f' % (won_matchs, num_test_matchs, percentage))
-            com_print('    TOTAL REWARDS:%d\n' %  total_reward)
+            # num_test_matchs = NUM_TEST_MATCHS
+            # new_args = args
+            # new_args.load_p1_model = p1_model_path
+            # com_print('    TESTING MODEL ON %d matchs...' % num_test_matchs)
+            # won_matchs, total_reward = test_model(new_args, num_test_matchs, logger)
+            # percentage = won_matchs / num_test_matchs
+            # com_print('    WON MATCHS:%d/%d - ratio:%f' % (won_matchs, num_test_matchs, percentage))
+            # com_print('    TOTAL REWARDS:%d\n' %  total_reward)
 
     
     # Test performance of model on each state
     com_print('====== TESTING MODEL ======')
-    for state in game_states:
+    for state in test_states:
         num_test_matchs = NUM_TEST_MATCHS
         new_args = args
         new_args.state = state
